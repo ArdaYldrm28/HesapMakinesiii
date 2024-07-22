@@ -1,0 +1,120 @@
+﻿@model HesapMakinesiii.Models.CalculatorModel
+
+@{
+    ViewData["Title"] = "Phone Calculator";
+    Layout = null;
+}
+
+<div class="calculator">
+    <div class="a">
+     <div class="asd">
+        <input type="text" id="display" readonly>
+    </div> 
+    <div class="keys">
+        <button class="key operator" type="button" onclick="clearDisplay()">C</button>
+        <button class="key operator" type="button" onclick="deleteLastCharacter()">&#9003;</button> <!-- Sil butonu -->
+         <button class="key operator" type="button" onclick="calculatePercentage()">%</button> <!-- Yüzde butonu -->
+         <button class="key operator" type="button" onclick="appendToDisplay('/')">/</button>
+            <button class="key" type="button" onclick="appendToDisplay('7')">7</button>
+        <button class="key" type="button" onclick="appendToDisplay('8')">8</button>
+        <button class="key" type="button" onclick="appendToDisplay('9')">9</button>
+            <button class="key operator" type="button" onclick="appendToDisplay('*')">*</button>
+            <button class="key" type="button" onclick="appendToDisplay('4')">4</button>
+            <button class="key" type="button" onclick="appendToDisplay('5')">5</button> 
+            <button class="key" type="button" onclick="appendToDisplay('6')">6</button>
+            <button class="key operator" type="button" onclick="appendToDisplay('-')">-</button>
+            <button class="key" type="button" onclick="appendToDisplay('1')">1</button>
+            <button class="key" type="button" onclick="appendToDisplay('2')">2</button>
+            <button class="key" type="button" onclick="appendToDisplay('3')">3</button>
+            <button class="key operator" type="button" onclick="appendToDisplay('+')">+</button>
+            <button class="key" type="button" onclick="appendToDisplay('0')">0</button>      
+        <button class="key operator equal-key" type="button" onclick="calculateAndAppend()">=</button>
+            <button class="key" type="button" onclick="appendToDisplay('.')">.</button>
+            
+    
+    </div>
+    </div>
+</div>
+<script src="~/js/calculator.js"></script>
+
+<style>
+    
+
+
+    .calculator{
+        display:flex;
+        justify-content:center;
+        text-align:center;
+        border: 2px solid #fff; /* Beyaz köşe çizgileri */
+        border-radius: 2px; /* Köşeleri yuvarlatma */
+        box-shadow: 0 0 10px rgba(0,0,0,0.5); /* Hafif gölge efekti */
+        background-color: #000; /* Hesap makinesi arka planı siyah */
+        width: 260px; /* Hesap makinesi genişliği */
+        height: 240px;
+        margin-top:20px;
+    }
+    
+    .keys{
+        display:grid;
+        grid-template-columns:repeat(4,1fr);
+        gap:5px;
+        text-align: center;
+        width: 170px;
+        margin-top:5px;
+        padding-left:45px;
+    }
+    .equal-key{
+        grid-column: span 2;/* Butonun 2 sütun kaplamasını sağlar */
+    }
+    .asd{
+        width: 240px;
+        padding-bottom:5px;
+        padding: 10px;
+        text-align: center;
+        margin-bottom: 5px;
+        background-color: #000; /* Ekran arka planı siyah */
+    }
+
+    .key {
+        border: none;
+        background-color: #444; /* Butonlar koyu gri */
+        padding: 5px; /* Padding değerini küçülttük */
+        font-size: 1em; /* Font boyutunu küçülttük */
+        cursor: pointer;
+        transition: background-color 0.3s;
+        color: #fff; /* Buton yazısı beyaz */
+    }
+
+        .key:hover {
+            background-color: #555; /* Hover durumu için daha koyu bir gri */
+        }
+
+    .display input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px;
+        font-size: 1.5em;
+        border: none;
+        outline: none;
+        background-color: #000; /* Ekran arka planı siyah */
+        color: #fff; /* Ekran yazısı beyaz */
+    }
+
+    .operator {
+        background-color: #ff8c00; /* Operatör butonları turuncu */
+        color: #fff; /* Operatör yazıları beyaz */
+    }
+
+    .equal-key {
+        grid-column: span 2; /* Butonun 2 sütun kaplamasını sağlar */
+        background-color: #ff8c00; /* Eşittir butonu turuncu */
+    }
+
+    .operator.equal-key {
+        height: calc(100% + 1px); /* Eşittir butonunun boyunu artırır */
+    }
+    .a{
+        flex-direction:row;
+        max-width:auto;
+    }
+</style>

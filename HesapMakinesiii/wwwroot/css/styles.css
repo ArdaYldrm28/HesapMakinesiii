@@ -1,0 +1,70 @@
+﻿body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #000; /* Arka plan siyah */
+}
+
+.calculator {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    background-color: #333; /* Hesap makinesi arka planı koyu gri */
+    width: 300px;
+}
+
+.display {
+    padding: 10px;
+    text-align: right;
+    border-bottom: 1px solid #555; /* Daha koyu bir çizgi */
+    margin-bottom: 10px;
+    background-color: #000; /* Ekran arka planı siyah */
+}
+
+    .display input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px;
+        font-size: 1.5em;
+        border: none;
+        outline: none;
+        background-color: #000; /* Ekran arka planı siyah */
+        color: #fff; /* Ekran yazısı beyaz */
+    }
+
+.keys {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 sütun düzeni */
+    gap: 1px;
+}
+
+.key {
+    border: none;
+    background-color: #444; /* Butonlar koyu gri */
+    padding: 20px; /* Padding değerini artırdık */
+    font-size: 1.2em; /* Font boyutunu büyüttük */
+    cursor: pointer;
+    transition: background-color 0.3s;
+    color: #fff; /* Buton yazısı beyaz */
+}
+
+    .key:hover {
+        background-color: #555; /* Hover durumu için daha koyu bir gri */
+    }
+
+.operator {
+    background-color: #ff8c00; /* Operatör butonları turuncu */
+    color: #fff; /* Operatör yazıları beyaz */
+}
+
+.equal-key {
+    grid-column: span 2; /* Butonun 2 sütun kaplamasını sağlar */
+    background-color: #ff8c00; /* Eşittir butonu turuncu */
+}
+
+.operator.equal-key {
+    height: calc(100% + 1px); /* Eşittir butonunun boyunu artırır */
+}
