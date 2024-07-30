@@ -1,54 +1,109 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using HesapMakinesiii.Data;
 using HesapMakinesiii.Models;
-using System.Collections.Generic;
-using HesapMakinesiii.Helpers;
-using System;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
-namespace HesapMakinesiii.Controllers
+public class CalculatorController : Controller
 {
-    public class CalculatorController : Controller
+    private readonly CalculatorDbContext _context;
+
+    public CalculatorController(CalculatorDbContext context)
     {
-        [HttpGet]
-        public IActionResult Index()
-        {
-            return View(new CalculatorModel());
-        }
+        _context = context;
+    }
 
-        [HttpPost]
-        public IActionResult Index(CalculatorModel model)
+    [HttpGet]
+    public IActionResult Index()
+    {
+        var model = new CalculatorModel
         {
-            if (ModelState.IsValid)
+            History = _context.Calculations
+                              .OrderByDescending(c => c.Timestamp)
+                              .Select(c => $"{c.Expression} = {c.Result} at {c.Timestamp:yyyy-MM-dd HH:mm:ss}")
+                              .ToList()
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public IActionResult Index(CalculatorModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            double result = 0;
+            string expression = "";
+
+            switch (model.Operation)
             {
-                double result = 0;
-
-                switch (model.Operation)
-                {
-                    case "Add":
-                        result = model.Number1 + model.Number2;
-                        break;
-                    case "Subtract":
-                        result = model.Number1 - model.Number2;
-                        break;
-                    case "Multiply":
-                        result = model.Number1 * model.Number2;
-                        break;
-                    case "Divide":
-                        if (model.Number2 != 0)
-                        {
-                            result = model.Number1 / model.Number2;
-                        }
-                        else
-                        {
-                            ModelState.AddModelError("", "Cannot divide by zero.");
-                        }
-                        break;
-                }
-
-                model.Result = result;
+                case "Add":
+                    result = model.Number1 + model.Number2;
+                    expression = $"{model.Number1} + {model.Number2}";
+                    break;
+                case "Subtract":
+                    result = model.Number1 - model.Number2;
+                    expression = $"{model.Number1} - {model.Number2}";
+                    break;
+                case "Multiply":
+                    result = model.Number1 * model.Number2;
+                    expression = $"{model.Number1} * {model.Number2}";
+                    break;
+                case "Divide":
+                    if (model.Number2 != 0)
+                    {
+                        result = model.Number1 / model.Number2;
+                        expression = $"{model.Number1} / {model.Number2}";
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Cannot divide by zero.");
+                    }
+                    break;
             }
 
+            model.Result = result;
 
-            return View(model);
+            if (ModelState.IsValid)
+            {
+                var calculation = new Calculation
+                {
+                    Expression = expression,
+                    Result = result,
+                    Timestamp = DateTime.Now
+                };
+
+                _context.Calculations.Add(calculation);
+                _context.SaveChanges();
+
+                model.History = _context.Calculations
+                                      .OrderByDescending(c => c.Timestamp)
+                                      .Select(c => $"{c.Expression} = {c.Result} at {c.Timestamp:yyyy-MM-dd HH:mm:ss}")
+                                      .ToList();
+            }
         }
+
+        return View(model);
     }
+
+    [HttpPost]
+    public async Task<IActionResult> SaveCalculation([FromBody] CalculationDto calculationDto)
+    {
+        if (calculationDto == null)
+        {
+            return BadRequest();
+        }
+
+        var calculation = new Calculation
+        {
+            Expression = calculationDto.Expression,
+            Result = calculationDto.Result,
+            Timestamp = DateTime.Now
+        };
+
+        _context.Calculations.Add(calculation);
+        await _context.SaveChangesAsync();
+
+        return Ok();
+    }
+
 }

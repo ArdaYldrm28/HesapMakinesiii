@@ -1,4 +1,4 @@
-﻿using System;
+﻿using HesapMakinesiii.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace HesapMakinesiii.Data
@@ -11,13 +11,5 @@ namespace HesapMakinesiii.Data
         }
 
         public DbSet<Calculation> Calculations { get; set; }
-    }
-
-    public class Calculation
-    {
-        public int Id { get; set; }
-        public string Expression { get; set; }
-        public double Result { get; set; }
-        public DateTime Timestamp { get; set; }
     }
 }

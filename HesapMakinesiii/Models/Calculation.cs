@@ -6,7 +6,7 @@ namespace HesapMakinesiii.Models
     {
         public int Id { get; set; }
         public string Expression { get; set; }
-        public decimal Result { get; set; }
+        public double Result { get; set; }
         public DateTime Timestamp { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using HesapMakinesiii.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -11,30 +12,36 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HesapMakinesiii.Migrations
 {
     [DbContext(typeof(CalculatorDbContext))]
-    [Migration("20240722104404_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240724051301_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.7");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            modelBuilder.Entity("HesapMakinesiii.Data.Calculation", b =>
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("HesapMakinesiii.Models.Calculation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Expression")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Result")
-                        .HasColumnType("TEXT");
+                    b.Property<double>("Result")
+                        .HasColumnType("float");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 

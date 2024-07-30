@@ -1,32 +1,110 @@
+using HesapMakinesiii.Data;
 using HesapMakinesiii.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace HesapMakinesiii.Controllers
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    private readonly CalculatorDbContext _context;
+
+    public HomeController(CalculatorDbContext context)
     {
-        private readonly ILogger<HomeController> _logger;
+        _context = context;
+    }
 
-        public HomeController(ILogger<HomeController> logger)
+    [HttpGet]
+    public IActionResult Index()
+    {
+        var model = new CalculatorModel
         {
-            _logger = logger;
+            History = _context.Calculations
+                              .OrderByDescending(c => c.Timestamp)
+                              .Select(c => $"{c.Expression} = {c.Result} at {c.Timestamp:yyyy-MM-dd HH:mm:ss}")
+                              .ToList()
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public IActionResult Index(CalculatorModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            double result = 0;
+            string expression = "";
+
+            switch (model.Operation)
+            {
+                case "Add":
+                    result = model.Number1 + model.Number2;
+                    expression = $"{model.Number1} + {model.Number2}";
+                    break;
+                case "Subtract":
+                    result = model.Number1 - model.Number2;
+                    expression = $"{model.Number1} - {model.Number2}";
+                    break;
+                case "Multiply":
+                    result = model.Number1 * model.Number2;
+                    expression = $"{model.Number1} * {model.Number2}";
+                    break;
+                case "Divide":
+                    if (model.Number2 != 0)
+                    {
+                        result = model.Number1 / model.Number2;
+                        expression = $"{model.Number1} / {model.Number2}";
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Cannot divide by zero.");
+                    }
+                    break;
+            }
+
+            model.Result = result;
+
+            if (ModelState.IsValid)
+            {
+                var calculation = new Calculation
+                {
+                    Expression = expression,
+                    Result = result,
+                    Timestamp = DateTime.Now
+                };
+
+                _context.Calculations.Add(calculation);
+                _context.SaveChanges();
+
+                model.History = _context.Calculations
+                                      .OrderByDescending(c => c.Timestamp)
+                                      .Select(c => $"{c.Expression} = {c.Result} at {c.Timestamp:yyyy-MM-dd HH:mm:ss}")
+                                      .ToList();
+            }
         }
 
-        public IActionResult Index()
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SaveCalculation([FromBody] CalculationDto calculationDto)
+    {
+        if (calculationDto == null)
         {
-            return View();
+            return BadRequest();
         }
 
-        public IActionResult Privacy()
+        var calculation = new Calculation
         {
-            return View();
-        }
+            Expression = calculationDto.Expression,
+            Result = calculationDto.Result,
+            Timestamp = DateTime.Now
+        };
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        _context.Calculations.Add(calculation);
+        await _context.SaveChangesAsync();
+
+        return Ok();
     }
 }
+

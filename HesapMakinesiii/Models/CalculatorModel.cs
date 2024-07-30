@@ -11,6 +11,7 @@ namespace HesapMakinesiii.Models
         [Required]
         public string Operation { get; set; }
         public double Result { get; set; }
+        public List<string> History { get; set; } = new List<string>();
 
     }
 }
